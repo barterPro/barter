@@ -29,7 +29,7 @@ export class Payment {
   @Column({ nullable: true })
   virtualAccountNumber?: string;
 
-  @Column({ nullable: true, type: 'timestamp' })
+  @Column({ nullable: true, type: 'text' })
   transactionDate?: Date;
 
   @Column({ nullable: true })
@@ -62,7 +62,7 @@ export class Payment {
   @Column({ nullable: true })
   refundId?: string;
 
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({ type: 'simple-array', nullable: true })
   additionalInfo?: Record<string, any>;
 
   @CreateDateColumn()

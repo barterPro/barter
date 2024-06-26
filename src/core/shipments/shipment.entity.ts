@@ -22,10 +22,10 @@ export class Shipment {
   @Column()
   trackingNumber: string;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'text' })
   shippedDate: Date;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'text', nullable: true })
   deliveredDate?: Date;
 
   @CreateDateColumn()

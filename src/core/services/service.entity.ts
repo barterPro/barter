@@ -36,7 +36,7 @@ export class Service {
   @Column('float')
   discount: number;
 
-  @Column('jsonb')
+  @Column('simple-array')
   variations: { [key: string]: string | number }[];
 
   @Column()
@@ -45,7 +45,7 @@ export class Service {
   @Column({ default: true })
   isActive: boolean;
 
-  @Column('jsonb', { nullable: true })
+  @Column('simple-array', { nullable: true })
   reviews?: {
     userId: string;
     rating: number;

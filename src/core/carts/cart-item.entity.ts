@@ -2,19 +2,19 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  // ManyToOne,
+  ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-// import { Cart } from './cart.entity';
+import { Cart } from './cart.entity';
 
 @Entity()
 export class CartItem {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  // @ManyToOne(() => Cart, (cart) => cart.items)
-  // cart: Cart;
+  @ManyToOne(() => Cart, (cart) => cart.items)
+  cart: Cart;
 
   @Column()
   productId: string;

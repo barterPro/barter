@@ -14,11 +14,14 @@ export class Category {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  // @Column({ type: 'uuid', nullable: true })
+  // reference: string;
+
   @Column()
   name: string;
 
-  @Column({ nullable: true })
-  description?: string;
+  @Column()
+  description: string;
 
   @Column({ nullable: true })
   imageUrl?: string;

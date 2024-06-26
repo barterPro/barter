@@ -6,11 +6,13 @@ import {
   UpdateDateColumn,
   // ManyToMany,
   // JoinTable,
-  // OneToMany,
+  OneToMany,
 } from 'typeorm';
+import { Address } from '../addresses/address.entity';
 // import { Product } from '../products/product.entity';
 // import { Service } from '../services/service.entity';
 // import { Payment } from '../payments/payment.entity';
+import { Cart } from '../carts/cart.entity';
 
 @Entity()
 export class User {
@@ -44,8 +46,8 @@ export class User {
   @Column({ nullable: true })
   phone?: string;
 
-  @Column({ nullable: true })
-  address?: string;
+  @OneToMany(() => Address, (address) => address.user)
+  addresses: Address[];
 
   @Column({ nullable: true })
   city?: string;
@@ -68,7 +70,7 @@ export class User {
   @Column('text', { array: true })
   roles: string[];
 
-  @Column('jsonb', { nullable: true })
+  @Column('simple-array', { nullable: true })
   notificationPreferences?: {
     email: boolean;
     SMS: boolean;
@@ -98,6 +100,9 @@ export class User {
   // @OneToMany(() => Payment, (payment) => payment.user)
   // paymentHistory: Payment[];
 
+  @OneToMany(() => Cart, (cart) => cart.user)
+  carts: Cart[];
+
   @Column('text', { array: true, nullable: true })
   favorites?: string[];
 
@@ -107,14 +112,14 @@ export class User {
   @Column({ default: false })
   twoFactorAuth: boolean;
 
-  @Column('jsonb', { nullable: true })
+  @Column('simple-array', { nullable: true })
   privacySettings?: {
     showEmail: boolean;
     showPhone: boolean;
     showAddress: boolean;
   };
 
-  @Column('jsonb', { nullable: true })
+  @Column('simple-array', { nullable: true })
   ratings?: {
     buyer: number;
     seller: number;
@@ -151,7 +156,7 @@ export class User {
   @Column({ nullable: true })
   companyPhone?: string;
 
-  @Column('jsonb', { nullable: true })
+  @Column('simple-array', { nullable: true })
   companyVerificationDocuments?: {
     documentType: string;
     documentURL: string;

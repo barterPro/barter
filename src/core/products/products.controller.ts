@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { Product } from './product.entity';
-import { CustomSerializerInterceptor } from '../serializers/serializer';
+import { CustomSerializerInterceptor } from '../../serializers/serializer';
 
 @Controller('products')
 @UseInterceptors(CustomSerializerInterceptor)

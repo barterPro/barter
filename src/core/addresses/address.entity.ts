@@ -2,11 +2,11 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  // ManyToOne,
+  ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-// import { User } from '../users/user.entity';
+import { User } from '../users/user.entity';
 
 @Entity()
 export class Address {
@@ -28,8 +28,8 @@ export class Address {
   @Column()
   postalCode: string;
 
-  // @ManyToOne(() => User, (user) => user.addresses)
-  // user: User;
+  @ManyToOne(() => User, (user) => user.addresses)
+  user: User;
 
   @Column({ default: false })
   isDefault: boolean;

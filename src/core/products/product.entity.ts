@@ -15,8 +15,11 @@ import {
 
 @Entity()
 export class Product {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ type: 'uuid', nullable: true })
+  reference: string;
 
   @Column()
   name: string;
@@ -27,7 +30,7 @@ export class Product {
   @Column({ type: 'int', default: 0 })
   quantity: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   price: number;
 
   @Column({ nullable: true })
@@ -51,13 +54,13 @@ export class Product {
   @Column({ default: 0 })
   views: number;
 
-  @Column('jsonb', { nullable: true })
+  @Column('simple-array', { nullable: true })
   specifications?: {
     key: string;
     value: string;
   }[];
 
-  @Column('jsonb', { nullable: true })
+  @Column('simple-array', { nullable: true })
   reviews?: {
     userId: string;
     rating: number;
@@ -82,16 +85,16 @@ export class Product {
   @Column({ nullable: true })
   isFeatured?: boolean;
 
-  @Column('jsonb', { nullable: true })
+  @Column('simple-array', { nullable: true })
   variations?: {
     name: string;
     options: string[];
   }[];
 
-  @Column()
+  @Column({ nullable: true })
   availabilityStatus: string;
 
-  @Column('jsonb')
+  @Column({ type: 'simple-array', nullable: true })
   attributes: { [key: string]: string | number }[];
 
   @CreateDateColumn()

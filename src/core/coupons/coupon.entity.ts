@@ -17,7 +17,7 @@ export class Coupon {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   discountAmount: number;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'text' })
   expirationDate: Date;
 
   @Column({ default: true })
