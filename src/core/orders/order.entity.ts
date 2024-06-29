@@ -2,56 +2,56 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  // ManyToOne,
-  // OneToMany,
+  ManyToOne,
+  OneToOne,
+  OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-// import { User } from '../users/user.entity';
-// import { Payment } from '../payments/payment.entity';
-// import { Product } from '../products/product.entity';
+
+import { Shipment } from '../shipments/shipment.entity';
+import { User } from '../users/user.entity';
+import { OrderItem } from './order-item.entitiy';
+import { Payment } from '../payments/payment.entity';
+import { Refund } from '../refunds/refund.entity';
+import { Escrow } from '../escrow/escrow.entity';
+import { Product } from '../products/product.entity';
 
 @Entity()
 export class Order {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  // @ManyToOne(() => User, (user) => user.orders)
-  // user: User;
+  @ManyToOne(() => User, (user) => user.orders, { onDelete: 'CASCADE' })
+  user: User;
 
-  // @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
-  // items: OrderItem[];
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.order, { cascade: true })
+  items: OrderItem[];
 
-  // @ManyToOne(() => Payment, (payment) => payment.orders)
-  // payment: Payment;
-
-  @Column('decimal')
-  totalAmount: number;
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  total: number;
 
   @Column()
   status: string;
+
+  @ManyToOne(() => Payment, (payment) => payment.orders, { nullable: true })
+  payment: Payment;
+
+  @OneToMany(() => Refund, (refund) => refund.order)
+  refunds: Refund[];
+
+  @OneToMany(() => Product, (product) => product.order)
+  products: Product[];
+
+  @OneToOne(() => Escrow, (escrow) => escrow.order)
+  escrow: Escrow;
+
+  @OneToMany(() => Shipment, (shipment) => shipment.order, { cascade: true })
+  shipments: Shipment[];
 
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
-}
-
-@Entity()
-export class OrderItem {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  // @ManyToOne(() => Order, (order) => order.items)
-  // order: Order;
-
-  // @ManyToOne(() => Product, (product) => product.orders)
-  // product: Product;
-
-  @Column('decimal')
-  price: number;
-
-  @Column()
-  quantity: number;
 }

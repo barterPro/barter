@@ -4,7 +4,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Order } from '../orders/order.entity';
 
 @Entity()
 export class Payment {
@@ -44,6 +46,9 @@ export class Payment {
   @Column('uuid', { array: true })
   productIds: string[];
 
+  @OneToMany(() => Order, (order) => order.payment)
+  orders: Order[];
+
   @Column('uuid', { array: true })
   serviceIds: string[];
 
@@ -70,4 +75,7 @@ export class Payment {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Column({ nullable: true })
+  paymentLink?: string; // New field for storing the payment link
 }

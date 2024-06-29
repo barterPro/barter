@@ -2,32 +2,32 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  // ManyToOne,
+  ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-// import { Order } from '../orders/order.entity';
-// import { Product } from '../products/product.entity';
+import { Order } from '../orders/order.entity';
+import { User } from '../users/user.entity';
 
 @Entity()
-export class ReturnAndRefund {
+export class Refund {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  // @ManyToOne(() => Order, (order) => order.returnAndRefunds)
-  // order: Order;
+  @ManyToOne(() => Order, (order) => order.refunds, { onDelete: 'CASCADE' })
+  order: Order;
 
-  // @ManyToOne(() => Product, (product) => product.returnAndRefunds)
-  // product: Product;
+  @ManyToOne(() => User, (user) => user.refunds, { onDelete: 'CASCADE' })
+  user: User;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  amount: number;
 
   @Column()
   reason: string;
 
   @Column()
   status: string;
-
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  refundAmount: number;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -5,6 +5,7 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  Column,
 } from 'typeorm';
 import { User } from '../users/user.entity';
 import { CartItem } from './cart-item.entity';
@@ -19,6 +20,15 @@ export class Cart {
 
   @OneToMany(() => CartItem, (cartItem) => cartItem.cart)
   items: CartItem[];
+
+  @Column({ default: false })
+  isActive: boolean;
+
+  @Column({ default: false })
+  isExpired: boolean;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  total: number;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -2,23 +2,25 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  // ManyToOne,
+  ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-// import { User } from '../users/user.entity';
-// import { Product } from '../products/product.entity';
+import { User } from '../users/user.entity';
+import { Product } from '../products/product.entity';
 
 @Entity()
 export class Review {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  // @ManyToOne(() => User, (user) => user.reviews)
-  // user: User;
+  @ManyToOne(() => User, (user) => user.reviews, { onDelete: 'CASCADE' })
+  user: User;
 
-  // @ManyToOne(() => Product, (product) => product.reviews)
-  // product: Product;
+  @ManyToOne(() => Product, (product) => product.reviews, {
+    onDelete: 'CASCADE',
+  })
+  product: Product;
 
   @Column()
   rating: number;

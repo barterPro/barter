@@ -1,47 +1,91 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { LessThan, Repository } from 'typeorm';
+import { CartItem } from './cart-item.entity';
 import { Cart } from './cart.entity';
-import { Repository } from 'typeorm';
-import { CreateCartDto } from './dtos/create-cart';
+import { CreateCartItemDto } from './dtos/create-cartItem';
 
 @Injectable()
 export class CartsService {
-  constructor(@InjectRepository(Cart) private cartsService: Repository<Cart>) {}
+  constructor(
+    @InjectRepository(Cart) private cartsRepository: Repository<Cart>,
+    @InjectRepository(CartItem)
+    private cartItemsRepository: Repository<CartItem>,
+  ) {}
 
-  async addAddress(body: CreateCartDto) {
-    const cart = await this.cartsService.create(body);
+  async initCart() {
+    const activeCart = await this.cartsRepository.findOne({
+      where: { isActive: true, isExpired: false },
+    });
 
-    return await this.cartsService.save(cart);
+    if (!activeCart) {
+      const newCart = this.cartsRepository.create();
+
+      return await this.cartsRepository.save(newCart);
+    }
+
+    return activeCart;
   }
 
-  async getAllAddresses() {
-    return await this.cartsService.find();
+  async addItemsToCart(body: CreateCartItemDto, id: string) {
+    const cartItem = await this.cartItemsRepository.create(body);
+    const savedCartItem = await this.cartItemsRepository.save(cartItem);
+
+    const cart = await this.cartsRepository.findOneBy({ id });
+    const updatedCart = { ...cart, productId: savedCartItem.productId };
+
+    return await this.cartItemsRepository.save(updatedCart);
   }
 
-  async getOneAddress(id: string) {
-    const cart = await this.cartsService.findOneBy({ id });
+  async deleteCartItem(id: string) {
+    const cartItem = await this.cartItemsRepository.findOneBy({ id });
 
-    if (!cart) throw new NotFoundException('Cart does not exist');
+    if (cartItem)
+      throw new BadRequestException(
+        'An error occurred deleting this item, please try again',
+      );
 
-    return cart;
+    return await this.cartItemsRepository.remove(cartItem);
   }
 
-  async updateAddress(updates: Partial<Cart>, id: string) {
-    const cart = await this.cartsService.findOneBy({ id });
+  async updateCartItem(updates: Partial<CartItem>, id: string) {
+    const cartItem = await this.cartItemsRepository.findOneBy({ id });
 
-    if (!cart) throw new NotFoundException('Cart does not exist');
+    if (cartItem)
+      throw new BadRequestException('An error occurred, please try again');
 
-    const updatedAddress = { ...cart, ...updates };
+    const udpatedCartItem = { ...cartItem, updates };
 
-    return await this.cartsService.save(updatedAddress);
+    return await this.cartItemsRepository.save(udpatedCartItem);
   }
 
-  async deleteAddress(id: string) {
-    const cart = await this.cartsService.findOneBy({ id });
+  async deleteCart(id: string) {
+    const cart = await this.cartsRepository.findOneBy({ id });
 
-    if (!cart) throw new NotFoundException('Cart does not exist');
+    if (!cart)
+      throw new NotFoundException('An error occurred, please try again');
 
-    return await this.cartsService.remove(cart);
+    const cartItems = cart.items.map((cartItem) => cartItem.id);
+
+    await this.cartItemsRepository.delete(cartItems);
+
+    return await this.cartsRepository.remove(cart);
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async expireOldCarts() {
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    const expiredCarts = await this.cartsRepository.find({
+      where: { createdAt: LessThan(oneWeekAgo) },
+    });
+
+    for (const cart of expiredCarts) {
+      cart.isExpired = true;
+      await this.cartsRepository.save(cart);
+    }
   }
 }

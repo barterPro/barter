@@ -1,22 +1,45 @@
-import { Body, Controller, Post } from '@nestjs/common';
-
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ServicesService } from './services.service';
-import { CreateTagDto } from '../tags/dtos/create-tag';
+import { CreateServiceDto } from './dtos/create-service';
+import { UpdateServiceDto } from './dtos/update-service';
 
 @Controller('services')
 export class ServicesController {
-  constructor(private servicesService: ServicesService) {}
+  constructor(private readonly servicesService: ServicesService) {}
 
-  @Post()
-  async createService(@Body() body: CreateTagDto) {
-    console.log(body);
+  @Get()
+  async findAllServices() {
+    return this.servicesService.findAllServices();
   }
 
-  async getAllServices() {}
+  @Get(':id')
+  async findOneService(@Param('id') id: number) {
+    return this.servicesService.findOneService(id);
+  }
 
-  async getOneService() {}
+  @Post()
+  async createService(@Body() createServiceDto: CreateServiceDto) {
+    return this.servicesService.createService(createServiceDto);
+  }
 
-  async updateService() {}
+  @Patch(':id')
+  updateService(
+    @Param('id') id: number,
+    @Body() updateServiceDto: UpdateServiceDto,
+  ) {
+    return this.servicesService.updateService(id, updateServiceDto);
+  }
 
-  async deleteService() {}
+  @Delete(':id')
+  removeService(@Param('id') id: number) {
+    return this.servicesService.removeService(id);
+  }
 }

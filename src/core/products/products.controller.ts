@@ -1,54 +1,46 @@
-import { CreateProductDto } from './dtos/product-dtos';
 import {
-  Body,
   Controller,
-  Post,
   Get,
-  Patch,
+  Post,
+  Put,
   Delete,
-  Query,
   Param,
-  UseInterceptors,
+  Body,
 } from '@nestjs/common';
-import { ProductsService } from './products.service';
+import { ProductsService } from '../products/products.service';
+import { CreateProductDto } from './dtos/create-product';
+import { UpdateProductDto } from './dtos/update-product';
 import { Product } from './product.entity';
-import { CustomSerializerInterceptor } from '../../serializers/serializer';
 
 @Controller('products')
-@UseInterceptors(CustomSerializerInterceptor)
 export class ProductsController {
-  constructor(private productsService: ProductsService) {}
-
-  @Post()
-  async createProduct(@Body() body: CreateProductDto) {
-    return await this.productsService.createProduct(body);
-  }
+  constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  async listProducts(
-    @Query('name') name: string,
-    @Query('quantity') quantity: string,
-    @Query('condition') condition: string,
+  async findAll() {
+    return await this.productsService.findAll();
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: number | string): Promise<Product> {
+    return await this.productsService.findOne(id);
+  }
+
+  @Post()
+  async create(@Body() createProductDto: CreateProductDto): Promise<Product> {
+    return await this.productsService.create(createProductDto);
+  }
+
+  @Put(':id')
+  async update(
+    @Param('id') id: number | string,
+    @Body() updateProductDto: UpdateProductDto,
   ) {
-    return await this.productsService.findAllProducts(
-      name,
-      quantity,
-      condition,
-    );
+    return await this.productsService.update(id, updateProductDto);
   }
 
-  @Get('/:id')
-  async getProduct(@Param('id') id: string) {
-    return await this.productsService.findOneProduct(id);
-  }
-
-  @Patch('/:id')
-  async updateProduct(@Body() body: Partial<Product>, @Param('id') id: string) {
-    return await this.productsService.updateOneProduct(id, body);
-  }
-
-  @Delete('/:id')
-  async deleteProduct(@Param('id') id: string) {
-    return await this.productsService.deleteOneProduct(id);
+  @Delete(':id')
+  async remove(@Param('id') id: number | string): Promise<void> {
+    return await this.productsService.remove(id);
   }
 }

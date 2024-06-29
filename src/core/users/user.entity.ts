@@ -4,20 +4,28 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  // ManyToMany,
-  // JoinTable,
+  ManyToMany,
+  JoinColumn,
+  JoinTable,
+  OneToOne,
   OneToMany,
+  ManyToOne,
 } from 'typeorm';
 import { Address } from '../addresses/address.entity';
-// import { Product } from '../products/product.entity';
-// import { Service } from '../services/service.entity';
-// import { Payment } from '../payments/payment.entity';
+import { Product } from '../products/product.entity';
+import { Service } from '../services/service.entity';
+import { Payment } from '../payments/payment.entity';
 import { Cart } from '../carts/cart.entity';
+import { Wishlist } from '../wishlists/wishlist.entity';
+import { Order } from '../orders/order.entity';
+import { Balance } from '../balances/balances.entity';
+import { Refund } from '../refunds/refund.entity';
+import { Notification } from 'src/utils/notifications/notification.entity';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  userID: string;
+  userID: string | number;
 
   @Column({ unique: true })
   email: string;
@@ -89,19 +97,25 @@ export class User {
   @UpdateDateColumn()
   lastLogin: Date;
 
-  // @ManyToMany(() => Product)
-  // @JoinTable()
-  // purchaseHistory: Product[];
+  @ManyToOne(() => Notification, (notification) => notification.user)
+  notifications: Notification[];
 
-  // @ManyToMany(() => Service)
-  // @JoinTable()
-  // serviceHistory: Service[];
+  @ManyToMany(() => Product)
+  @JoinTable()
+  purchaseHistory: Product[];
 
-  // @OneToMany(() => Payment, (payment) => payment.user)
-  // paymentHistory: Payment[];
+  @ManyToMany(() => Service)
+  @JoinTable()
+  serviceHistory: Service[];
+
+  @OneToMany(() => Payment, (payment) => payment.userId)
+  paymentHistory: Payment[];
 
   @OneToMany(() => Cart, (cart) => cart.user)
   carts: Cart[];
+
+  @OneToMany(() => Refund, (cart) => cart.user)
+  refunds?: Refund[];
 
   @Column('text', { array: true, nullable: true })
   favorites?: string[];
@@ -143,7 +157,6 @@ export class User {
   @Column({ default: 'individual' })
   accountType: 'individual' | 'company';
 
-  // Company-specific fields
   @Column({ nullable: true })
   companyName?: string;
 
@@ -164,4 +177,23 @@ export class User {
 
   @Column({ nullable: true })
   companyRepresentative?: string;
+
+  @Column({ nullable: true })
+  riskRating?: number;
+
+  @Column({ nullable: true })
+  isSuspended?: boolean;
+
+  @Column({ nullable: true })
+  isBanned?: boolean;
+
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.user)
+  wishlists: Wishlist[];
+
+  @OneToMany(() => Order, (order) => order.user)
+  orders: Order[];
+
+  @OneToOne(() => Balance)
+  @JoinColumn()
+  balance: Balance;
 }

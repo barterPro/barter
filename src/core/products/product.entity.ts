@@ -4,19 +4,23 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  // ManyToOne,
-  // JoinColumn,
-  // ManyToMany,
-  // JoinTable,
+  OneToMany,
+  ManyToOne,
+  JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
-// import { Category } from '../categories/category.entity';
-// import { Tag } from '../tags/tag.entity';
-// import { Order } from '../orders/order.entity';
+import { Category } from '../categories/category.entity';
+import { Tag } from '../tags/tag.entity';
+import { Review } from '../reviews/review.entity';
+import { OrderItem } from '../orders/order-item.entitiy';
+import { Order } from '../orders/order.entity';
+import { Inventory } from '../inventories/inventory.entity';
 
 @Entity()
 export class Product {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number | string;
 
   @Column({ type: 'uuid', nullable: true })
   reference: string;
@@ -60,24 +64,19 @@ export class Product {
     value: string;
   }[];
 
-  @Column('simple-array', { nullable: true })
-  reviews?: {
-    userId: string;
-    rating: number;
-    comment: string;
-    date: Date;
-  }[];
+  @OneToMany(() => Inventory, (inventory) => inventory.product)
+  inventories: Inventory[];
 
-  // @ManyToOne(() => Category, (category) => category.products)
-  // @JoinColumn()
-  // category: Category;
+  @ManyToOne(() => Category, (category) => category.products)
+  @JoinColumn()
+  category: Category;
 
-  // @ManyToMany(() => Tag)
-  // @JoinTable()
-  // tags: Tag[];
+  @ManyToMany(() => Tag)
+  @JoinTable()
+  tags: Tag[];
 
-  // @ManyToOne(() => Order, (order) => order.products, { nullable: true })
-  // order?: Order;
+  @ManyToOne(() => Order, (order) => order.products, { nullable: true })
+  order?: Order;
 
   @Column({ nullable: true })
   discount?: number;
@@ -102,4 +101,13 @@ export class Product {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => Review, (review) => review.product)
+  reviews: Review[];
+
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
+  orderItems: OrderItem[];
+
+  @ManyToOne(() => Inventory, (inventory) => inventory.product)
+  inventory: Inventory;
 }

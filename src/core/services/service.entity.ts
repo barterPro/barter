@@ -4,11 +4,11 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  // ManyToMany,
-  // JoinTable,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
-// import { Tag } from '../tags/tag.entity';
-// import { Product } from '../products/product.entity';
+import { Tag } from '../tags/tag.entity';
+import { Category } from '../categories/category.entity';
 
 @Entity()
 export class Service {
@@ -59,11 +59,11 @@ export class Service {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // @ManyToMany(() => Tag)
-  // @JoinTable()
-  // tags: Tag[];
+  @ManyToMany(() => Tag)
+  @JoinTable()
+  tags: Tag[];
 
-  // @ManyToMany(() => Tag)
-  // @JoinTable()
-  // categories: Category[];
+  @ManyToMany(() => Tag)
+  @JoinTable()
+  categories: Category[];
 }
